@@ -1,34 +1,31 @@
 const COOLING_LIMITS = {
-  PASSIVE_COOLING: {lowerLimit: 0, upperLimit: 35},
-  HI_ACTIVE_COOLING: {lowerLimit: 0, upperLimit: 45},
-  MED_ACTIVE_COOLING: {lowerLimit: 0, upperLimit: 40},
+  PASSIVE_COOLING: { lowerLimit: 0, upperLimit: 35 },
+  HI_ACTIVE_COOLING: { lowerLimit: 0, upperLimit: 45 },
+  MED_ACTIVE_COOLING: { lowerLimit: 0, upperLimit: 40 },
 };
 
 function inferBreach(value, lowerLimit, upperLimit) {
   if (value < lowerLimit) {
     return 'TOO_LOW';
-  } else if (value > upperLimit) {
+  }
+  if (value > upperLimit) {
     return 'TOO_HIGH';
   }
   return 'NORMAL';
 }
 
 function classifyTemperatureBreach(coolingType, temperatureInC, limits) {
-  const {lowerLimit, upperLimit} = limits[coolingType];
+  const { lowerLimit, upperLimit } = limits[coolingType];
   return inferBreach(temperatureInC, lowerLimit, upperLimit);
 }
 
-function checkAndAlert(alertTarget, batteryChar, temperatureInC) {
+function checkAndAlert(alertTarget, batteryChar, temperatureInC, alerter) {
   const breachType = classifyTemperatureBreach(
-    batteryChar["coolingType"],
+    batteryChar['coolingType'],
     temperatureInC,
     COOLING_LIMITS
   );
-  if (alertTarget == "TO_CONTROLLER") {
-    sendToController(breachType);
-  } else if (alertTarget == "TO_EMAIL") {
-    sendToEmail(breachType);
-  }
+  alerter[alertTarget](breachType, print);
 }
 
 function sendToController(breachType) {
@@ -37,16 +34,16 @@ function sendToController(breachType) {
 }
 
 function sendToEmail(breachType) {
-  const recepient = "a.b@c.com";
-  if (breachType == "TOO_LOW") {
+  const recepient = 'a.b@c.com';
+  if (breachType == 'TOO_LOW') {
     print(`To: ${recepient}`);
-    print("Hi, the temperature is too low");
-  } else if (breachType == "TOO_HIGH") {
+    print('Hi, the temperature is too low');
+  } else if (breachType == 'TOO_HIGH') {
     print(`To: ${recepient}`);
-    print("Hi, the temperature is too high");
+    print('Hi, the temperature is too high');
   }
 }
-function print(message){
+function print(message) {
   console.log(message);
 }
 
@@ -56,5 +53,5 @@ module.exports = {
   checkAndAlert,
   sendToController,
   sendToEmail,
-  COOLING_LIMITS
+  COOLING_LIMITS,
 };
